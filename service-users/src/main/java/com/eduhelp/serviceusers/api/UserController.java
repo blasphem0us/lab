@@ -2,15 +2,9 @@ package com.eduhelp.serviceusers.api;
 
 import com.eduhelp.serviceusers.service.UserService ;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import java.net.URI;
 import java.util.List;
@@ -19,27 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public final class UserController {
-
-    @Bean
-    public RestTemplate getRestTemplate() {
-        return new RestTemplate();
-    }
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-   private String getUserDisciplines(final long user_id) {
-        ResponseEntity<String> userInfo = null;
-        try {
-            userInfo = restTemplate.exchange(
-                    String.format("http://localhost:8083/disciplines_users?user_id=%d", user_id),
-                    HttpMethod.GET,
-                    null,
-                    String.class);
-            return userInfo.getBody();
-
-        } catch (final HttpClientErrorException.NotFound e) { return null;}}
-
     private final UserService userService;
 
     @GetMapping
@@ -52,14 +25,8 @@ public final class UserController {
     public ResponseEntity<JSONObject> show_disciplines(@PathVariable long id){
         try {
             final com.eduhelp.serviceusers.repo.model.User user = userService.fetchById(id);
-            String userDisciplines = getUserDisciplines(id);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("id", user.getId());
-            jsonObject.put("username", user.getUsername());
-            jsonObject.put("name", user.getName());
-            jsonObject.put("surname", user.getSurname());
-            jsonObject.put("disciplines", new JSONArray(userDisciplines));
-            return new ResponseEntity(jsonObject.toString(), HttpStatus.OK);
+            JSONObject data = userService.getJsonRepresentation(user);
+            return new ResponseEntity(data.toString(), HttpStatus.OK);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.notFound().build();
         }
@@ -99,22 +66,13 @@ public final class UserController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable long id){
         try {
-            String userDisciplines = getUserDisciplines(id);
-            JSONArray array = new JSONArray(userDisciplines);
-            for (int i =0;i < array.length(); i++ ){
-                int relation_id = Integer.parseInt((array.getJSONObject(i).get("id")).toString());
-                restTemplate.exchange(
-                        String.format("http://localhost:8083/disciplines_users/%d", relation_id),
-                        HttpMethod.DELETE,
-                        null,
-                        String.class);
-            }
             userService.delete(id);
             return ResponseEntity.noContent().build();
-        } catch (HttpClientErrorException e){
+        } catch (IllegalArgumentException e){
             return new ResponseEntity("No user with such id", HttpStatus.BAD_REQUEST);
         }
     }
