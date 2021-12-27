@@ -14,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.context.annotation.Bean;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +31,7 @@ public final class DisciplineUserController {
         ResponseEntity<String> userInfo = null;
         try {
             userInfo = restTemplate.exchange(
-                    String.format("http://localhost:8080/users/%d", user_id),
+                    String.format("http://users/users/%d", user_id),
                     HttpMethod.GET,
                     null,
                     String.class);
@@ -45,7 +44,7 @@ public final class DisciplineUserController {
         ResponseEntity<String> disciplineInfo = null;
         try {
             disciplineInfo = restTemplate.exchange(
-                    String.format("http://localhost:8084/disciplines/%d", discipline_id),
+                    String.format("http://disciplines/disciplines/%d", discipline_id),
                     HttpMethod.GET,
                     null,
                     String.class);

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: disciplines
+spec:
+  selector:
+    app: disciplines
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8084

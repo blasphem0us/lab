@@ -44,7 +44,7 @@ public final class UserService {
         ResponseEntity<String> userInfo = null;
         try {
             userInfo = restTemplate.exchange(
-                    String.format("http://localhost:8083/disciplines_users?user_id=%d", user_id),
+                    String.format("http://discipline-members/disciplines_users?user_id=%d", user_id),
                     HttpMethod.GET,
                     null,
                     String.class);
@@ -94,7 +94,7 @@ public final class UserService {
         for (int i =0; i < array.length(); i++ ){
             int relation_id = Integer.parseInt((array.getJSONObject(i).get("id")).toString());
             restTemplate.exchange(
-                    String.format("http://localhost:8083/disciplines_users/%d", relation_id),
+                    String.format("http://discipline-members/disciplines_users/%d", relation_id),
                     HttpMethod.DELETE,
                     null,
                     String.class);
