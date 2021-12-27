@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: disciplines
+spec:
+  selector:
+    app: disciplines
+  type: NodePort
+  ports:
+    - name: http
+      port: 8084
+      nodePort: 30003
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: disciplines
+spec:
+  selector:
+    matchLabels:
+      app: disciplines
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: disciplines
+    spec:
+      containers:
+        - name: server
+          image: blasphem0us/service-disciplines:latest
+          ports:
+            - name: http
+              containerPort: 8084
