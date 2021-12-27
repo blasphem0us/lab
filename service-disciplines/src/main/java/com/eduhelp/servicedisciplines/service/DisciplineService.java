@@ -68,7 +68,7 @@ public final class DisciplineService {
         for (int i =0;i < array.length(); i++ ){
             int relation_id = Integer.parseInt((array.getJSONObject(i).get("id")).toString());
             restTemplate.exchange(
-                    String.format("http://discipline-members/disciplines_users/%d", relation_id),
+                    String.format("http://members:8083/disciplines_users/%d", relation_id),
                     HttpMethod.DELETE,
                     null,
                     String.class);
@@ -92,7 +92,7 @@ public final class DisciplineService {
         ResponseEntity<String> disciplineInfo = null;
         try {
             disciplineInfo = restTemplate.exchange(
-                    String.format("http://discipline-members/disciplines_users?discipline_id=%d", discipline_id),
+                    String.format("http://members:8083/disciplines_users?discipline_id=%d", discipline_id),
                     HttpMethod.GET,
                     null,
                     String.class);

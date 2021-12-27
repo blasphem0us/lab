@@ -33,7 +33,7 @@ public final class DisciplineUserService {
         ResponseEntity<String> userInfo = null;
         try {
             userInfo = restTemplate.exchange(
-                    String.format("http://users/users/%d", user_id),
+                    String.format("http://users:8080/users/%d", user_id),
                     HttpMethod.GET,
                     null,
                     String.class);
@@ -46,7 +46,7 @@ public final class DisciplineUserService {
         ResponseEntity<String> disciplineInfo = null;
         try {
             disciplineInfo = restTemplate.exchange(
-                    String.format("http://disciplines/disciplines/%d", discipline_id),
+                    String.format("http://disciplines:8084/disciplines/%d", discipline_id),
                     HttpMethod.GET,
                     null,
                     String.class);
