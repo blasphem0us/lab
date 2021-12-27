@@ -5,6 +5,7 @@ package com.eduhelp.servicediscipline_members.service;
 import com.eduhelp.servicediscipline_members.repo.DisciplineUserRepo;
 import com.eduhelp.servicediscipline_members.repo.model.DisciplineUser;
 import lombok.RequiredArgsConstructor;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,11 +26,10 @@ public final class DisciplineUserService {
     public RestTemplate getRestTemplate() {
         return new RestTemplate();
     }
-
     @Autowired
     private RestTemplate restTemplate;
 
-    private String getUser(final long user_id) {
+    public String getUser(final long user_id) {
         ResponseEntity<String> userInfo = null;
         try {
             userInfo = restTemplate.exchange(
@@ -41,7 +42,7 @@ public final class DisciplineUserService {
         } catch (final HttpClientErrorException.NotFound e) { return null;}
     }
 
-    private String getDiscipline(final long discipline_id) {
+    public String getDiscipline(final long discipline_id) {
         ResponseEntity<String> disciplineInfo = null;
         try {
             disciplineInfo = restTemplate.exchange(
@@ -54,7 +55,35 @@ public final class DisciplineUserService {
         } catch (final HttpClientErrorException.NotFound e) { return null;}
     }
 
+    public List<com.eduhelp.servicediscipline_members.repo.model.DisciplineUser> getFilteredRelations(Optional<Long> user_id, Optional<Long> discipline_id) {
+        final List<com.eduhelp.servicediscipline_members.repo.model.DisciplineUser> disciplines_users = fetchAll();
+        List<com.eduhelp.servicediscipline_members.repo.model.DisciplineUser> filteredRelations =  new ArrayList();
 
+        if (user_id.isPresent() || discipline_id.isPresent()) {
+            for (com.eduhelp.servicediscipline_members.repo.model.DisciplineUser disciplineUser : disciplines_users) {
+                if (user_id.isPresent() && user_id.get() != disciplineUser.getUser_id()) {
+                    continue;
+                }
+
+                if (discipline_id.isPresent() && discipline_id.get() != disciplineUser.getDiscipline_id()) {
+                    continue;
+                }
+
+                filteredRelations.add(disciplineUser);
+            }
+        } else {
+            return disciplines_users;
+        }
+        return filteredRelations;
+    }
+
+    public JSONObject getJson(DisciplineUser disciplineUser) {
+        JSONObject entry = new JSONObject();
+        entry.put("id", disciplineUser.getId());
+        entry.put("user", new JSONObject(getUser(disciplineUser.getUser_id())));
+        entry.put("discipline", new JSONObject(getDiscipline(disciplineUser.getDiscipline_id())));
+        return entry;
+    }
 
     private final DisciplineUserRepo disciplineUserRepo;
 
