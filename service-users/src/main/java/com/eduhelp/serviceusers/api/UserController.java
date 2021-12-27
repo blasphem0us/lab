@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.json.JSONObject;
 import java.net.URI;
 import java.util.List;
+import com.eduhelp.serviceusers.repo.model.User;
 
 @RequiredArgsConstructor
 @RestController
